@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+
+    <section class="section-padding">
+        <div class="single-movie-heading-rating">
+            <div class="single-movie-heading">
+                <div class="single-movie-heading-box">
+                    <h1>{{ movie.title }}</h1>
+                    <div class="single-movie-details">
+                        <h6 class="movie-release-date">{{movie.release_date}}</h6>
+                        {% for genre in movie.genre %}
+                            <div class="movie-genre"><i class="fa-solid fa-circle"></i><h6>{{genre}}</h6></div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="single-movie-rating">
+                <div class="single-movie-imdb-rating-box">
+                    <h6>MMDB RATING</h6>
+                    <div class="single-movie-imdb-rating-details">
+                        <i class="fa-solid fa-star"></i>
+                        <div class="single-movie-imdb-avg-rating">
+                            <h4>{{movie.avg_rating}}/10</h4>
+                            <h6>{{movie.num_rating}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="single-movie-user-rating-box">
+                    <h6>YOUR RATING</h6>
+                    <div class="single-movie-user-rating-details">
+                        <i class="fa-solid fa-star"></i>
+                        <div class="single-movie-user-avg-rating">
+                            {% if user_rating %}
+                                <h6>{{user_rating}}</h6>
+                            {% else %}
+                                <a href="#">Rate</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="single-movie-image-video-container">
+            <div class="single-movie-image">
+                <!-- Movie image -->
+                <img src="{{ movie.image }}" alt="Movie Image">
+            </div>
+            <div class="single-movie-trailer">
+                <!-- Movie trailer video -->
+                <iframe width="80%" height="100%" src="{{movie.trailer_link}}?autoplay=1" frameborder="0" allowfullscreen  muted></iframe>
+            </div>
+        </div>
+        <div class="single-movie-plot-stars-streaming-container">
+            <div class="single-movie-plot-stars-container">
+                <p class="single-movie-plot">{{movie.plot_summary}}</p>
+                <h6 class="single-movie-director">Director: <span>{{movie.director.name}}</span></h6>
+                <h6 class="single-movie-stars">Stars: 
+                    <span>{% for cast in movie.cast %}
+                        {{ cast.person }}{% if not forloop.last %} | {% endif %}
+                    {% endfor %}</span>
+                </h6>
+            </div>
+            <div class="single-movie-streaming-container">
+                <div class="single-movie-stream-name">
+                    <h6>STREAMING</h6>
+                    <a href="https://www.primevideo.com/detail/amzn1.dv.gti.ceb9ac9d-0765-cbc4-f689-a420dcc25993">
+                        {% if movie.platform == 'Prime' %}
+                            <img src="{% static 'watchlistapp/images/prime-logo.png' %}" class="prime-img"/>
+                        {% else %}
+                            <img src="{% static 'watchlistapp/images/netflix-logo.png' %}" class="netflix-img"/>                 
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="single-movie-awards-container">
+            <div class="single-movie-award-heading-details">
+                <h3 class="single-movie-award-heading">Awards</h3>
+                <div class="single-movie-awards-box">
+                    {% if awards_data %}
+                        {% for award in awards_data %}
+                            <div class="award-group">
+                                <div class="award-image-box">
+                                    {% for person in award.persons %}
+                                        <img src="{{ person.image }}" class="award-image"/>
+                                    {% endfor %}
+                                </div>
+                                <div class="award-details">
+                                    <h4>{{ award.name }}</h4>
+                                    <p>{{ award.category }}</p>
+                                    <p>{{ award.awardfor }}</p>
+                                    <p>{{ award.year }}</p>                  
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-awards">No Awards Won yet for this movie</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="single-movie-cast-container">
+            <div class="single-movie-cast-heading-details">
+                <h3 class="single-movie-cast-heading">Cast</h3>
+                <div class="single-movie-cast-box">
+                    {% for cast in cast_info %}
+                        <div class="cast-group">
+                            <div class="cast-image-box">
+                                <img src="{{ cast.person.image }}" class="cast-image"/>
+                            </div>
+                            <div class="cast-details">
+                                <h4>{{cast.person.name}}</h4>
+                                <p>{{cast.person.role}}</p>                                               
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="single-movie-reviews-container">
+            <div class="single-movie-review-heading-details">
+                <h3 class="single-movie-review-heading">User Reviews</h3>
+                <div class="single-movie-review-box">
+                    {% for reviews in user_reviews %}
+                        <div class="single-movie-review-author-rating-box">
+                            <div class="single-movie-review-author-box">
+                                <h5>{{reviews.author}}</h5>
+                                <h6>{{reviews.created}}</h6>
+                            </div>
+                            <div class="single-movie-review-rating-box">
+                                <i class="fa-solid fa-star"></i>
+                                <div class="single-movie-review-rating">
+                                    <h6>{{reviews.rating}}/10</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="single-movie-review-content">
+                            {{reviews.content}}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+
+
+    </section>
+
+{% endblock %}

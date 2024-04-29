@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div>
+        <div className='form-container'>
+            <div className='wrapper'>
+            <h2>create account</h2>
+            <!-- <div className='form-group'>
+                <label htmlFor="">First Name:</label>
+                <input type="text"
+                className='email-form'
+                name="first_name" />
+            </div> -->
+            <form method="post" action="{% url 'register' %}">
+                {% csrf_token %}
+                <div class='form-group'>
+                    <label for="id_email">Email Address:</label>
+                    <input type="email" class='email-form' name="email" id="id_email" required />
+                </div>
+                <div class='form-group'>
+                    <label for="id_username">Username:</label>
+                    <input type="text" class='email-form' name="username" id="id_username" required />
+                </div>
+                <div class='form-group'>
+                    <label for="id_password">Password:</label>
+                    <input type="password" class='email-form' name="password" id="id_password" required />
+                </div>
+                <div class='form-group'>
+                    <label for="id_password2">Confirm Password:</label>
+                    <input type="password" class='email-form' name="password2" id="id_password2" required />
+                </div>
+                <input type="submit" value="Submit" class="submitButton" />
+            </form>
+            
+                 
+        
+           </div>
+        </div>
+
+    </div>
+{% endblock %}

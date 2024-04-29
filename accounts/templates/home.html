@@ -1,0 +1,12 @@
+
+{% block content %}
+
+<div class="username-container">
+    {% if user.is_authenticated %}
+        <h4>Welcome {{ user.username }}</h4>
+    {% else %}
+        <h4>Welcome user{{request.user}}</h4>
+    {% endif %}
+</div>
+
+{% endblock %}

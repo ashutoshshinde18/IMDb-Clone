@@ -1,0 +1,31 @@
+<nav class="navbar">
+    <a href="/watch/home" class="home-logo-link">
+        <div class="logo">
+        MMDb
+        </div>
+    </a>
+    <div class="header__search">
+        <input
+          type="text"
+          placeholder="Search for movies..."
+          class="form__input"
+          id="searchInput"
+        />
+        
+        <button class="search__btn">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <div class="search-results" id="searchResults"></div>
+    </div>
+    <div class="user-actions">
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}" class="signin-register">Logout</a>
+            
+            
+        {% else %}
+            <a href="{% url 'register-page' %}" class="signin-register">Register</a>
+            <a href="{% url 'login-page' %}" class="signin-register">Login</a>
+            
+        {% endif %}
+    </div>
+  </nav>

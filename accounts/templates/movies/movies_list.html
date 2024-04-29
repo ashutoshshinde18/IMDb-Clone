@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+  
+    <section class="latest-movie-trailer">
+        <div class="video-container">
+            <iframe src="{{latest_trailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </section>
+
+
+    <section class="movies-list-container">
+        <h1 class="movies-category-heading">Recent Movies</h1>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      <div class="card-container swiper">
+          <!-- Additional required wrapper -->
+          <div class="swiper-wrapper">
+            <!-- Slides -->
+            {% for movie in all_movies %}
+            <a href="/watch/single_movie/{{ movie.id }}" class="movie-card-link">
+              <div class="swiper-slide">
+                <div class="card">
+                  
+                  <img src={{ movie.image }} />
+                  <div class="movie-review-rating">
+                    <div class="movie-rating">
+                      <img src="{% static 'watchlistapp/images/star.png' %}"/>
+                      <h4>{{movie.avg_rating}}</h4>
+                    </div>
+                    <div class="movie-add-review">
+                      <a href="#" class="add-review" data-bs-toggle="modal"  data-bs-target="#reviewModal" data-movie-id="{{ movie.id }}">Add your review</a>
+                    </div>
+                  </div>
+                  <div class="movie-title">
+                    <h5>{{movie.title}}</h5>               
+                  </div>    
+                  <div class="movie-stream-platform">
+                    {% if movie.platform == 'Prime' %}
+                      <img src="{% static 'watchlistapp/images/prime-logo.png' %}" class="prime-img"/>
+                      <div class="prime-tagline">
+                        <h5>{{movie.platform}}</h5><span><h6>Included with prime</h6></span>
+                      </div>
+                    {% else %}
+                      <img src="{% static 'watchlistapp/images/netflix-logo.png' %}" class="netflix-img"/>
+                      <div class="prime-tagline">
+                        <h5>{{movie.platform}}</h5><span><h6>With Subscription</h6></span>
+                      </div>
+                    {% endif %}
+                  </div> 
+                  <div class="movie-trailer-link">
+                      <img src="{% static 'watchlistapp/images/play-button-arrowhead.png' %}"/>
+                      <a href="{{ movie.trailer_link }}">Trailer link</a>
+                  </div>
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+         
+      </div>
+    </section>
+
+    <section class="top-movies-container">
+      <h1 class="top-movie-heading">Top Rated MMDb Movies</h1>
+      <div class="top-movies-content">
+          <!-- Additional required wrapper -->
+            <!-- Slides -->
+            {% for movie in highly_rated_movies %}
+              <div class="card">
+                <img src={{ movie.image }} />
+                <div class="movie-review-rating">
+                  <div class="movie-rating">
+                    <img src="{% static 'watchlistapp/images/star.png' %}"/>
+                    <h4>{{movie.avg_rating}}</h4>
+                  </div>
+                  <div class="movie-add-review">
+                    <a href="#" class="add-review">Add your review</a>
+                  </div>
+                </div>
+                <div class="movie-title">
+                  <h3>Singham</h3>               
+                </div>    
+                <div class="movie-stream-platform">
+                  {% if movie.platform == 'Prime' %}
+                    <img src="{% static 'watchlistapp/images/prime-logo.png' %}" class="prime-img"/>
+                    <div class="prime-tagline">
+                      <h3>{{movie.platform}}</h3><span><h6>Included with prime</h6></span>
+                    </div>
+                  {% else %}
+                    <img src="{% static 'watchlistapp/images/netflix-logo.png' %}" class="netflix-img"/>
+                    <div class="prime-tagline">
+                      <h3>{{movie.platform}}</h3><span><h6>With Subscription</h6></span>
+                    </div>
+                  {% endif %}
+                </div>  
+                <div class="movie-trailer-link">
+                    <img src="{% static 'watchlistapp/images/play-button-arrowhead.png' %}"/>
+                    <a href="{{ movie.trailer_link }}">Trailer link</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+       
+    </div>
+  </section>
+
+  <section class="tab-movies-container">
+    <div class="tab__btns">
+      <div class="tab__btn active-tab" data-target="#featured">Prime</div>
+      <div class="tab__btn" data-target="#popular">Netflix</div>
+      <div class="tab__btn" data-target="#new-added">New added</div>
+    </div>
+    <div class="tab__items">
+      <div class="tab__item active-tab" content id="featured">
+        <div class="tab-movies-content">
+          {% for movie in prime_movies %}
+          <div class="card">
+            <img src={{movie.image}} />
+            <div class="movie-review-rating">
+              <div class="movie-rating">
+                <img src="{% static 'watchlistapp/images/star.png' %}"/>
+                <h4>{{movie.avg_rating}}</h4>
+              </div>
+              <div class="movie-add-review">
+                <a href="#" class="add-review">Add your review</a>
+              </div>
+            </div>
+            <div class="movie-title">
+              <h3>{{movie.title}}</h3>               
+            </div>    
+            <div class="movie-stream-platform">
+              <img src="{% static 'watchlistapp/images/prime-logo.png' %}" class="prime-img"/>
+              <div class="prime-tagline">
+                <h3>Prime Video</h3><span><h6>Included with prime</h6></span>
+              </div>
+            </div> 
+            <div class="movie-trailer-link">
+                <img src="{% static 'watchlistapp/images/play-button-arrowhead.png' %}"/>
+                <a href="{{ movie.trailer_link }}">Trailer link</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>       
+      </div>
+    </div>
+
+      <div class="tab__item" content id="popular">
+        <div class="tab-movies-content">
+          {% for movie in netflix_movies %}
+          <div class="card">
+            <img src={{movie.image}} />
+            <div class="movie-review-rating">
+              <div class="movie-rating">
+                <img src="{% static 'watchlistapp/images/star.png' %}"/>
+                <h4>{{movie.avg_rating}}</h4>
+              </div>
+              <div class="movie-add-review">
+                <a href="#" class="add-review">Add your review</a>
+              </div>
+            </div>
+            <div class="movie-title">
+              <h3>{{movie.title}}</h3>               
+            </div>    
+            <div class="movie-stream-platform">
+              <img src="{% static 'watchlistapp/images/netflix-logo.png' %}" class="netflix-img"/>
+                <div class="prime-tagline">
+                  <h3>{{movie.platform}}</h3><span><h6>With Subscription</h6></span>
+                </div>
+            </div> 
+            <div class="movie-trailer-link">
+                <img src="{% static 'watchlistapp/images/play-button-arrowhead.png' %}"/>
+                <a href="{{ movie.trailer_link }}">Trailer link</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>                 
+      </div>
+
+      <div class="tab__item" content id="new-added">
+        <div class="tab-movies-content">
+          <div class="card">
+            <img src="{% static 'images/singham.jpg' %}" />
+            <div class="movie-review-rating">
+              <div class="movie-rating">
+                <img src="{% static 'images/star.png' %}"/>
+                <h4>8.4</h4>
+              </div>
+              <div class="movie-add-review">
+                <a href="#" class="add-review">Add your review</a>
+              </div>
+            </div>
+            <div class="movie-title">
+              <h3>Singham</h3>               
+            </div>    
+            <div class="movie-stream-platform">
+              <img src="{% static 'images/prime-logo.png' %}" class="prime-img"/>
+              <div class="prime-tagline">
+                <h3>Prime Video</h3><span><h6>Included with prime</h6></span>
+              </div>
+            </div> 
+            <div class="movie-trailer-link">
+                <img src="{% static 'images/play-button-arrowhead.png' %}"/>
+                <h4>Trailer link</h4>
+            </div>
+          </div>
+        </div>                  
+      </div>
+    </div>
+  </section>
+      
+  
+  <!-- Modal -->
+  <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Add Your Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Review form goes here -->
+                <form id="reviewForm" method="post" action="">
+                    {% csrf_token %}
+                    <!-- Add hidden input field to hold movie ID -->
+                    <input type="hidden" id="movieIdInput" name="movie_id">
+                    <!-- Add form fields here -->
+                    <div class="mb-3">
+                        <label for="reviewContent" class="form-label">Review Content</label>
+                        <textarea class="form-control" id="reviewContent" name="review_content" rows="3" placeholder="Enter your review content" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating (1-10)</label>
+                        <input type="number" class="form-control" id="rating" name="rating" min="1" max="10" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitReviewBtn">Submit Review</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+{% endblock %}
+

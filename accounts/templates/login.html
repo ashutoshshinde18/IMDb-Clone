@@ -1,0 +1,36 @@
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+<div className='form-container'>
+    <div className='wrapper'>
+    <h2>Login into your account</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div className='form-group'>
+            <label for="id_email">Username:</label>
+            <input type="text" class='email-form' name="username" id="id_email" required />
+        </div>
+           
+       
+       <div className='form-group'>
+            <label for="id_password">Password:</label>
+            <input type="password" class='email-form' name="password" id="id_password" required />
+       </div>
+       
+        <input type="submit" value="Login" className="submitButton" />
+                {% comment %} <p className='pass-link'><Link to={'/forget-password'}>forgot password</Link></p> {% endcomment %}
+    </form>
+    
+    
+   </div>
+</div>
+
+</div>
+{% endblock %}
