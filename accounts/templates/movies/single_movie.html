@@ -30,12 +30,12 @@
                 <div class="single-movie-user-rating-box">
                     <h6>YOUR RATING</h6>
                     <div class="single-movie-user-rating-details">
-                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
                         <div class="single-movie-user-avg-rating">
                             {% if user_rating %}
                                 <h6>{{user_rating}}</h6>
                             {% else %}
-                                <a href="#">Rate</a>
+                            <a href="#" class="add-review" data-bs-toggle="modal"  data-bs-target="#reviewModal" data-movie-id="{{ movie.id }}">Rate</a>
                             {% endif %}
                         </div>
                     </div>
@@ -59,7 +59,9 @@
                 <h6 class="single-movie-director">Director: <span>{{movie.director.name}}</span></h6>
                 <h6 class="single-movie-stars">Stars: 
                     <span>{% for cast in movie.cast %}
-                        {{ cast.person }}{% if not forloop.last %} | {% endif %}
+                        {% if cast.person.role != "director" %}
+                            {{ cast.person }}{% if not forloop.last %} | {% endif %}
+                        {% endif %}
                     {% endfor %}</span>
                 </h6>
             </div>
@@ -127,20 +129,47 @@
                 <h3 class="single-movie-review-heading">User Reviews</h3>
                 <div class="single-movie-review-box">
                     {% for reviews in user_reviews %}
-                        <div class="single-movie-review-author-rating-box">
-                            <div class="single-movie-review-author-box">
-                                <h5>{{reviews.author}}</h5>
-                                <h6>{{reviews.created}}</h6>
-                            </div>
-                            <div class="single-movie-review-rating-box">
-                                <i class="fa-solid fa-star"></i>
-                                <div class="single-movie-review-rating">
-                                    <h6>{{reviews.rating}}/10</h6>
+                        <div class="reviews-group">
+                            <div class="single-movie-review-author-rating-box">
+                                <div class="single-movie-review-author-box">
+                                    <h5>{{reviews.author}}</h5>
+                                    <h6>{{reviews.created}}</h6>
+                                </div>
+                                <div class="single-movie-review-rating-box">
+                                    <i class="fa-solid fa-star"></i>
+                                    <div class="single-movie-review-rating">
+                                        <h6>{{reviews.rating}}/10</h6>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="single-movie-review-content">
-                            {{reviews.content}}
+                            <div class="single-movie-review-content">
+                                <h4>{{reviews.title}}</h4>
+                                <h6>{{reviews.content}}<h6>
+                            </div>
+                            <div class="helpful-unhelpful-buttons">
+                                <div class="helpul-unhelpful-icons">
+                                    <form action="{% url 'review_helpful' reviews.id %}" method="post" class="helpful-form">
+                                        {% csrf_token %}
+                                        <button type="submit" class="helpful-button"><i class="fa-regular fa-thumbs-up"></i><p class="helpful-count-text">Helpful</p></button>
+                                    </form>
+                                    <form action="{% url 'review_unhelpful' reviews.id %}" method="post" class="unhelpful-form">
+                                        {% csrf_token %}
+                                        <button type="submit" class="unhelpful-button"><i class="fa-regular fa-thumbs-down"></i><p class="helpful-count-text">Not helpful</p></button>
+                                    </form>
+                                </div>
+                                <div class="helpful-unhelpful-count">
+                                    
+                                    <span id="count-{{ reviews.id }}-helpful">{{ reviews.helpful_count }}</span><span> out of</span> <span id="total-count-{{ reviews.id }}">{{reviews.total_count}}
+                                    </span>
+                                    <span>people found this helpful</span>
+                                </div>
+                            </div>
+                            {% if request.user.id in reviews.users_who_found_helpful %}
+                                <p class="helpful-unhelpful-message">You already found this review helpful!</p>
+                            {% elif request.user.id in reviews.users_who_found_unhelpful %}
+                                <p class="helpful-unhelpful-message">You already found this review unhelpful!</p>
+                            {% endif %}
+                            <div class="helpful-unhelpful-message" id="message-{{ reviews.id }}"></div>
                         </div>
                     {% endfor %}
                 </div>
@@ -148,6 +177,43 @@
         </div>
         
 
+    <!-- Modal -->
+  <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Add Your Review</h5>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <!-- Review form goes here -->
+                <form id="reviewForm" method="post" action="">
+                    {% csrf_token %}
+                    <!-- Add hidden input field to hold movie ID -->
+                    <input type="hidden" id="movieIdInput" name="movie_id">
+                    <!-- Add form fields here -->
+                    <div class="mb-3">
+                        <label for="reviewTitle" class="form-label">Review Title</label>
+                        <input type="text" class="form-control" id="reviewTitle" name="review_title" placeholder="Enter your review title" required></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reviewContent" class="form-label">Review Content</label>
+                        <textarea class="form-control" id="reviewContent" name="review_content" rows="3" placeholder="Enter your review content" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating (1-10)</label>
+                        <input type="number" class="form-control" id="rating" name="rating" min="1" max="10" required>
+                    </div>
+                    <p id="modalErrorMessage"></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" id="closeBtn" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn" id="submitReviewBtn">Submit Review</button>
+            </div>
+        </div>
+    </div>
+  </div>
 
     </section>
 

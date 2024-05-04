@@ -27,25 +27,25 @@
                   <div class="movie-review-rating">
                     <div class="movie-rating">
                       <img src="{% static 'watchlistapp/images/star.png' %}"/>
-                      <h4>{{movie.avg_rating}}</h4>
+                      <h6>{{movie.avg_rating}}</h6>
                     </div>
                     <div class="movie-add-review">
                       <a href="#" class="add-review" data-bs-toggle="modal"  data-bs-target="#reviewModal" data-movie-id="{{ movie.id }}">Add your review</a>
                     </div>
                   </div>
                   <div class="movie-title">
-                    <h5>{{movie.title}}</h5>               
+                    <h6>{{movie.title}}</h6>               
                   </div>    
                   <div class="movie-stream-platform">
                     {% if movie.platform == 'Prime' %}
                       <img src="{% static 'watchlistapp/images/prime-logo.png' %}" class="prime-img"/>
                       <div class="prime-tagline">
-                        <h5>{{movie.platform}}</h5><span><h6>Included with prime</h6></span>
+                        <h6>{{movie.platform}}</h6><span><h6>Included with prime</h6></span>
                       </div>
                     {% else %}
                       <img src="{% static 'watchlistapp/images/netflix-logo.png' %}" class="netflix-img"/>
                       <div class="prime-tagline">
-                        <h5>{{movie.platform}}</h5><span><h6>With Subscription</h6></span>
+                        <h6>{{movie.platform}}</h6><span><h6>With Subscription</h6></span>
                       </div>
                     {% endif %}
                   </div> 
@@ -73,25 +73,25 @@
                 <div class="movie-review-rating">
                   <div class="movie-rating">
                     <img src="{% static 'watchlistapp/images/star.png' %}"/>
-                    <h4>{{movie.avg_rating}}</h4>
+                    <h6>{{movie.avg_rating}}</h6>
                   </div>
                   <div class="movie-add-review">
                     <a href="#" class="add-review">Add your review</a>
                   </div>
                 </div>
                 <div class="movie-title">
-                  <h3>Singham</h3>               
+                  <h6>{{movie.title}}</h6>               
                 </div>    
                 <div class="movie-stream-platform">
                   {% if movie.platform == 'Prime' %}
                     <img src="{% static 'watchlistapp/images/prime-logo.png' %}" class="prime-img"/>
                     <div class="prime-tagline">
-                      <h3>{{movie.platform}}</h3><span><h6>Included with prime</h6></span>
+                      <h6>{{movie.platform}}</h6><span><h6>Included with prime</h6></span>
                     </div>
                   {% else %}
                     <img src="{% static 'watchlistapp/images/netflix-logo.png' %}" class="netflix-img"/>
                     <div class="prime-tagline">
-                      <h3>{{movie.platform}}</h3><span><h6>With Subscription</h6></span>
+                      <h6>{{movie.platform}}</h6><span><h6>With Subscription</h6></span>
                     </div>
                   {% endif %}
                 </div>  
@@ -110,7 +110,7 @@
     <div class="tab__btns">
       <div class="tab__btn active-tab" data-target="#featured">Prime</div>
       <div class="tab__btn" data-target="#popular">Netflix</div>
-      <div class="tab__btn" data-target="#new-added">New added</div>
+      {% comment %} <div class="tab__btn" data-target="#new-added">New added</div> {% endcomment %}
     </div>
     <div class="tab__items">
       <div class="tab__item active-tab" content id="featured">
@@ -121,19 +121,19 @@
             <div class="movie-review-rating">
               <div class="movie-rating">
                 <img src="{% static 'watchlistapp/images/star.png' %}"/>
-                <h4>{{movie.avg_rating}}</h4>
+                <h6>{{movie.avg_rating}}</h6>
               </div>
               <div class="movie-add-review">
                 <a href="#" class="add-review">Add your review</a>
               </div>
             </div>
             <div class="movie-title">
-              <h3>{{movie.title}}</h3>               
+              <h6>{{movie.title}}</h6>               
             </div>    
             <div class="movie-stream-platform">
               <img src="{% static 'watchlistapp/images/prime-logo.png' %}" class="prime-img"/>
               <div class="prime-tagline">
-                <h3>Prime Video</h3><span><h6>Included with prime</h6></span>
+                <h6>Prime Video</h6><span><h6>Included with prime</h6></span>
               </div>
             </div> 
             <div class="movie-trailer-link">
@@ -154,19 +154,19 @@
             <div class="movie-review-rating">
               <div class="movie-rating">
                 <img src="{% static 'watchlistapp/images/star.png' %}"/>
-                <h4>{{movie.avg_rating}}</h4>
+                <h6>{{movie.avg_rating}}</h6>
               </div>
               <div class="movie-add-review">
                 <a href="#" class="add-review">Add your review</a>
               </div>
             </div>
             <div class="movie-title">
-              <h3>{{movie.title}}</h3>               
+              <h6>{{movie.title}}</h6>               
             </div>    
             <div class="movie-stream-platform">
               <img src="{% static 'watchlistapp/images/netflix-logo.png' %}" class="netflix-img"/>
                 <div class="prime-tagline">
-                  <h3>{{movie.platform}}</h3><span><h6>With Subscription</h6></span>
+                  <h6>{{movie.platform}}</h6><span><h6>With Subscription</h6></span>
                 </div>
             </div> 
             <div class="movie-trailer-link">
@@ -178,36 +178,7 @@
         </div>                 
       </div>
 
-      <div class="tab__item" content id="new-added">
-        <div class="tab-movies-content">
-          <div class="card">
-            <img src="{% static 'images/singham.jpg' %}" />
-            <div class="movie-review-rating">
-              <div class="movie-rating">
-                <img src="{% static 'images/star.png' %}"/>
-                <h4>8.4</h4>
-              </div>
-              <div class="movie-add-review">
-                <a href="#" class="add-review">Add your review</a>
-              </div>
-            </div>
-            <div class="movie-title">
-              <h3>Singham</h3>               
-            </div>    
-            <div class="movie-stream-platform">
-              <img src="{% static 'images/prime-logo.png' %}" class="prime-img"/>
-              <div class="prime-tagline">
-                <h3>Prime Video</h3><span><h6>Included with prime</h6></span>
-              </div>
-            </div> 
-            <div class="movie-trailer-link">
-                <img src="{% static 'images/play-button-arrowhead.png' %}"/>
-                <h4>Trailer link</h4>
-            </div>
-          </div>
-        </div>                  
-      </div>
-    </div>
+      
   </section>
       
   
@@ -217,7 +188,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="reviewModalLabel">Add Your Review</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <!-- Review form goes here -->
@@ -227,6 +198,10 @@
                     <input type="hidden" id="movieIdInput" name="movie_id">
                     <!-- Add form fields here -->
                     <div class="mb-3">
+                        <label for="reviewTitle" class="form-label">Review Title</label>
+                        <input type="text" class="form-control" id="reviewTitle" name="review_title" placeholder="Enter your review title" required></input>
+                    </div>
+                    <div class="mb-3">
                         <label for="reviewContent" class="form-label">Review Content</label>
                         <textarea class="form-control" id="reviewContent" name="review_content" rows="3" placeholder="Enter your review content" required></textarea>
                     </div>
@@ -234,11 +209,12 @@
                         <label for="rating" class="form-label">Rating (1-10)</label>
                         <input type="number" class="form-control" id="rating" name="rating" min="1" max="10" required>
                     </div>
+                    <p id="modalErrorMessage"></p>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="submitReviewBtn">Submit Review</button>
+                <button type="button" class="btn" id="closeBtn" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn" id="submitReviewBtn">Submit Review</button>
             </div>
         </div>
     </div>
