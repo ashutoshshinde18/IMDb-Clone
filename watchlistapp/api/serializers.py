@@ -14,11 +14,11 @@ class PlatformSerializer(serializers.ModelSerializer):
 
 
 class PersonSerializer(serializers.ModelSerializer):
-    movies = serializers.SerializerMethodField()
+    # movies = serializers.SerializerMethodField()
     # image = serializers.ImageField(source='image.url') 
     class Meta:
         model = Person
-        fields = ['name','movies','role']
+        fields = ['name','date_of_birth','bio','role','image']
 
     def get_movies(self, obj):
         # Assuming you have a many-to-many relationship between Person and Movie
@@ -26,11 +26,15 @@ class PersonSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
+    # total_count = serializers.SerializerMethodField()
+    
     class Meta:
         model = Review
         # fields = '__all__'
         exclude = ('movie', )
-
+        
+    # def get_total_count(self, obj):
+    #     return obj.helpful_count + obj.unhelpful_count
 
 class AwardSerializer(serializers.ModelSerializer):
     name = serializers.StringRelatedField(read_only=True)
@@ -54,12 +58,13 @@ class SeasonSerializer(serializers.ModelSerializer):
 
 
 class CastSerializer(serializers.ModelSerializer):
-    person = serializers.CharField(source='name')   
-    image = serializers.CharField()
-    role = serializers.CharField()
+    # person_name = serializers.CharField(source='name')   
+    person = PersonSerializer()
+    # image = serializers.CharField()
+    # role = serializers.CharField()
     class Meta:
         model = Cast
-        fields = ['person','image','role']
+        fields = ['person']
 
 
 class TVShowSerializer(serializers.ModelSerializer):
@@ -73,7 +78,7 @@ class TVShowSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
     director = PersonSerializer()
-    cast = CastSerializer(many=True)
+    # cast = CastSerializer(many=True)
     reviews = ReviewSerializer(many=True, source='movie_reviews')
     awards = AwardSerializer(many=True, source = 'movie_awards')
 
@@ -98,6 +103,6 @@ class MovieSerializer(serializers.ModelSerializer):
         representation['reviews'] = reviews_data
         
         # Retrieve genre names instead of IDs
-        genre_names = instance.genre.values_list('name', flat=True)
+        genre_names = list(instance.genre.values_list('name', flat=True))
         representation['genre'] = genre_names
         return representation

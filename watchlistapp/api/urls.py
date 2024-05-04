@@ -18,7 +18,7 @@
 
 from django.contrib import admin
 from django.urls import path
-from watchlistapp.api.views import review_create_view, index_view, single_movie, search_movies
+from watchlistapp.api.views import review_create_view, index_view, single_movie, search_movies, review_helpful, review_unhelpful
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -29,6 +29,8 @@ urlpatterns = [
     # path('<int:pk>/reviews/', review_list_view, name='reviews'),
     path('single_movie/<int:movie_id>/', single_movie, name='single_movie'),
     path('search/', search_movies, name='search_movies'),
+    path('review_helpful/<int:review_id>/', review_helpful, name='review_helpful'),
+    path('review_unhelpful/<int:review_id>/', review_unhelpful, name='review_unhelpful'),
 ]
 
 if settings.DEBUG:

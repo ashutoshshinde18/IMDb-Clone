@@ -66,8 +66,8 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from watchlistapp.models import Movie, Review, Cast
-from .serializers import MovieSerializer, ReviewSerializer, AwardSerializer, PersonSerializer
-from django.shortcuts import render
+from .serializers import MovieSerializer, ReviewSerializer, AwardSerializer, PersonSerializer, CastSerializer
+from django.shortcuts import get_object_or_404,render
 from rest_framework.validators import ValidationError
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated,AllowAny
@@ -79,8 +79,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
-
-
+import json
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def index_view(request):
@@ -101,7 +100,7 @@ def index_view(request):
     all_movies_serializer = MovieSerializer(all_movies, many=True)
 
     # Condition 4: Filter movies with avg_rating more than 9
-    highly_rated_movies = Movie.objects.filter(avg_rating__gt=9)[:5]
+    highly_rated_movies = Movie.objects.filter(avg_rating__gt=8).order_by('-avg_rating')[:5]
     highly_rated_movies_serializer = MovieSerializer(highly_rated_movies, many=True)
     
     #
@@ -125,10 +124,9 @@ def index_view(request):
         'username': username
     })
 
-@api_view(['POST'])
+# @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def review_create_view(request, pk):
-    print('yes its inside review create view',pk)
     if request.method == 'POST':
         try:
             movie = Movie.objects.get(pk=pk)
@@ -142,8 +140,9 @@ def review_create_view(request, pk):
         if review_queryset.exists():
             # raise ValidationError('You have already reviewed this movie!')
             return JsonResponse({'error': 'You have already reviewed this movie!'}, status=400)
-        
-        serializer = ReviewSerializer(data=request.data)
+        data = json.loads(request.body)
+        print('data:', data)
+        serializer = ReviewSerializer(data=data)
         if serializer.is_valid():
             if movie.num_rating == 0:
                 movie.avg_rating = serializer.validated_data['rating']
@@ -176,13 +175,15 @@ def single_movie(request, movie_id):
     # Retrieve the movie object with the provided movie_id
     movie = Movie.objects.get(pk=movie_id)
     
+    movie_all_serialized = MovieSerializer(movie)
+    print('movie object: ', movie_all_serialized.data)
     
+    print('Current logged in user: ',request.user)
     user_review = Review.objects.filter(movie=movie, author=request.user).first()  
     # If the user has reviewed the movie, extract the rating
     user_rating = user_review.rating if user_review else None
     
-    movie_all = MovieSerializer(movie)
-    # print(movie_all.data)
+    # print('Serialized movie: ',type(movie_all_serialized.data),'\n',movie_all_serialized.data)
     # Retrieve awards data for the movie
     awards_data = []
     for award in movie.movie_awards.all():
@@ -192,38 +193,73 @@ def single_movie(request, movie_id):
         persons_with_award = []
         # Assuming the award is associated with a movie and each award has a list of persons associated with it
         for cast in award.movie.cast.all():
+            # print(cast,'====>cast')
             person_data = PersonSerializer(cast).data
+            # print(person_data,'--->person_data')
+            # print(award_data,'--->award_data')
             if person_data['name'] in award_data['name']:  # Assuming 'name' is the field name for the person's name
                 person_data['image'] = f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/media/{cast.image}"  # Assuming 'image' is the field name for the image
                 persons_with_award.append(person_data)
         if persons_with_award:  # Check if there are persons with the same name as the award
             award_data['persons'] = persons_with_award
             awards_data.append(award_data)
-            
+    
     cast_info = Cast.objects.filter(movie=movie).exclude(person__role="Director")
-    cast_info = [
-    {
-        'person': {
-            'name': cast.person.name,
-            'date_of_birth': cast.person.date_of_birth,
-            'bio': cast.person.bio,
-            'role': cast.person.role,
-            'image': f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/media/{cast.person.image}"
-        }
-    }
-    for cast in cast_info
-    ]
-    
-    # user reviews for particular movie
-    try:
-        movie = Movie.objects.get(pk=movie_id)
-    except Movie.DoesNotExist:
-        messages.error(request, 'Movie does not exist')
+    # cast_info = [
+    # {
+    #     'person': {
+    #         'name': cast.person.name,
+    #         'date_of_birth': cast.person.date_of_birth,
+    #         'bio': cast.person.bio,
+    #         'role': cast.person.role,
+    #         'image': f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/media/{cast.person.image}"
+    #     }
+    # }
+    # for cast in cast_info
+    # ] 
+    cast_serializer = CastSerializer(cast_info, many=True).data
+    reviews = Review.objects.filter(movie=movie)#.exclude(author=request.user)
+    user_reviews_serialized = ReviewSerializer(reviews,many=True)
+    # return render(request, 'movies/single_movie.html', {'movie': movie_all_serialized.data, 'user_rating':user_rating, 'awards_data':awards_data, 'cast_info':cast_info, 'user_reviews':user_reviews_serialized.data})
+    # Construct JSON response
+    # print('cast serializer: ',cast_serializer)
+    return JsonResponse({
+        # 'movie': movie_all_serialized.data,
+        'user_rating': user_rating,
+        'awards_data': awards_data,
+        'cast_info': cast_serializer,
+        'user_reviews': user_reviews_serialized.data
+    })
 
-    reviews = Review.objects.filter(movie=movie)
-    user_reviews_serializer = ReviewSerializer(reviews, many=True)
+def review_helpful(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    user = request.user
+    # Check if the user has already marked this review as helpful
+    # if user in review.users_who_found_helpful.all():
+    #     return JsonResponse({'message': 'You already found this review helpful!'})
+    # Serialize the review object to calculate total_count
+    # Increment the helpful count and mark the user as found helpful
+    review.helpful_count += 1
+    review.users_who_found_helpful.add(user)
     
-    return render(request, 'movies/single_movie.html', {'movie': movie_all.data, 'user_rating':user_rating, 'awards_data':awards_data, 'cast_info':cast_info, 'user_reviews':user_reviews_serializer.data})
+    review.save()
+
+    return JsonResponse({'review_id': review_id, 'message': 'You found this review helpful!', 'success': True, 'count_type': 'helpful', 'helpful_count': review.helpful_count, 'total_count': review.total_count})
+
+def review_unhelpful(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    user = request.user
+
+    # Check if the user has already marked this review as unhelpful
+    # if user in review.users_who_found_unhelpful.all():
+    #     return JsonResponse({'message': 'You already found this review unhelpful!'})
+    # Increment the unhelpful count and mark the user as found unhelpful
+    review.unhelpful_count += 1
+    review.users_who_found_unhelpful.add(user)
+    
+    review.save()
+
+    return JsonResponse({'review_id': review_id, 'message': 'You found this review unhelpful.', 'success': True, 'count_type': 'unhelpful', 'unhelpful_count': review.unhelpful_count, 'total_count': review.total_count})
 
 def search_movies(request):
     query = request.GET.get('q')
