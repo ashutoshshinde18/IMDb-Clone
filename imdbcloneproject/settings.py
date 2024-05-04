@@ -11,18 +11,17 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
-import environ
+from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-# Load environment variables from .env file
-env = environ.Env()
-environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@rb9g@=ff7!95zi6=8qe0bvq*6!xx@a1vkhbogk6^3w!w=bp*1'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -100,10 +99,15 @@ WSGI_APPLICATION = 'imdbcloneproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',  # Or your PostgreSQL server's IP address
+        'PORT': '5432',  # Default PostgreSQL port
     }
 }
+
 
 
 # Password validation
@@ -149,8 +153,8 @@ STATICFILES_DIRS = [
 ]
 
 #AWS S3 Static Files Configuration
-AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = 'imdb-clone-bucket'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
